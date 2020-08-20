@@ -1,0 +1,13 @@
+library(tidyverse)
+library(lubridate)
+data <- read.csv2("household_power_consumption.txt")
+req1 <- data[ 66637:69517, ]
+req2 <- transform(req1, Global_active_power = as.numeric(Global_active_power))
+req <- req2 %>% mutate_at(vars(3:9), as.numeric)
+req$Date <- as.Date(req$Date, format = "%d/%m/%Y")
+req$Datetime <- paste(req$Date, req$Time, sep = " ") 
+req$Datetime <- strptime(req$Datetime, format = "%Y-%m-%d %H:%M:%S")
+req$Datetime <- as.POSIXct(req$Datetime)
+png("plot2.png", width = 480, height = 480)
+with(req, plot(Datetime, Global_active_power, type = "l", xlab = ""))
+dev.off()
